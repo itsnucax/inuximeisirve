@@ -119,11 +119,11 @@ const DhruImeiPage = () => {
                 >
                   {services.filter(s => s.SERVICETYPE === 'IMEI').map(service => (
                     <option key={service.SERVICEID} value={service.SERVICEID}>
-                      {service.SERVICENAME} (${service.CREDIT})
+                      {service.SERVICENAME} (${parseFloat(service.CREDIT).toFixed(2)})
                     </option>
                   ))}
                 </select>
-                <p className="text-right text-sm font-bold text-[var(--accent-primary)] mt-2">${selectedService?.CREDIT || '0.00'}</p>
+                <p className="text-right text-sm font-bold text-[var(--accent-primary)] mt-2">${selectedService ? parseFloat(selectedService.CREDIT).toFixed(2) : '0.00'}</p>
               </div>
               <div className="mt-4 flex-grow">
                 <label htmlFor="imei-list" className="block text-sm font-medium mb-2 text-[var(--text-secondary)]">Lista de IMEI (uno por línea)</label>
@@ -144,7 +144,7 @@ const DhruImeiPage = () => {
           <div className="glass-effect rounded-2xl p-8 border border-[var(--border-color)] text-center flex flex-col justify-between h-full">
             <div>
               <Smartphone className="w-16 h-16 mx-auto text-[var(--accent-primary)] mb-4" />
-              <p className="text-5xl font-bold mb-2">${selectedService?.CREDIT || '0.00'}</p>
+              <p className="text-5xl font-bold mb-2">${selectedService ? parseFloat(selectedService.CREDIT).toFixed(2) : '0.00'}</p>
               <p className="text-sm text-[var(--text-secondary)] mb-6">Simplemente complete los datos y proceda a pagar sus pedidos utilizando su saldo.</p>
               <div className="flex items-center justify-center gap-2 text-lg">
                 <Gem className="w-5 h-5 text-[var(--accent-primary)]" />

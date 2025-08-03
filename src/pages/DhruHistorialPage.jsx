@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useAuth } from '@/contexts/AuthContext';
 import { List, X, Clock, CheckCircle, XCircle, AlertTriangle } from 'lucide-react';
@@ -28,6 +28,30 @@ const StatusBadge = ({ status }) => {
 const DhruHistorialPage = () => {
     const { user } = useAuth();
     const [selectedOrder, setSelectedOrder] = useState(null);
+    const [orders, setOrders] = useState(user?.dhru_orders || []);
+
+    useEffect(() => {
+        setOrders(user?.dhru_orders || []);
+    }, [user]);
+
+    const handleSelectOrder = async (order) => {
+        setSelectedOrder(order);
+        try {
+            const response = await fetch('https://inuxteam.com/api/get_imei_orders_details.php', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ orderId: order.id })
+            });
+            const data = await response.json();
+            if (response.ok && data.order) {
+                const updatedOrders = orders.map(o => o.id === order.id ? { ...o, status: data.order.status } : o);
+                setOrders(updatedOrders);
+                setSelectedOrder(prev => prev ? { ...prev, status: data.order.status } : prev);
+            }
+        } catch (err) {
+            console.error('Error al actualizar el pedido:', err);
+        }
+    };
 
     return (
         <>
@@ -55,14 +79,14 @@ const DhruHistorialPage = () => {
                                 </tr>
                             </thead>
                             <tbody>
-                                {user?.dhru_orders && user.dhru_orders.length > 0 ? (
-                                    user.dhru_orders.map(order => (
-                                        <tr key={order.id} className="border-b border-[var(--border-color)]/50 hover:bg-[var(--bg-secondary)] transition-colors cursor-pointer" onClick={() => setSelectedOrder(order)}>
+                                {orders && orders.length > 0 ? (
+                                    orders.map(order => (
+                                        <tr key={order.id} className="border-b border-[var(--border-color)]/50 hover:bg-[var(--bg-secondary)] transition-colors cursor-pointer" onClick={() => handleSelectOrder(order)}>
                                             <td className="p-4 font-mono text-sm text-[var(--accent-primary)]">{order.id}</td>
                                             <td className="p-4 font-semibold">{order.service}</td>
                                             <td className="p-4 font-mono text-sm">{order.identifier}</td>
                                             <td className="p-4 text-center"><StatusBadge status={order.status} /></td>
-                                            <td className="p-4 text-right font-semibold">{order.cost}</td>
+                                            <td className="p-4 text-right font-semibold">${parseFloat(order.cost).toFixed(2)}</td>
                                         </tr>
                                     ))
                                 ) : (
@@ -118,7 +142,7 @@ const DhruHistorialPage = () => {
                                 </div>
                                 <div className="bg-[var(--bg-secondary)] p-4 rounded-lg border border-[var(--border-color)]">
                                     <p className="text-xs text-[var(--text-secondary)] mb-1">COSTO</p>
-                                    <p className="font-bold text-2xl text-[var(--accent-primary)]">{selectedOrder.cost}</p>
+                                    <p className="font-bold text-2xl text-[var(--accent-primary)]">${parseFloat(selectedOrder.cost).toFixed(2)}</p>
                                 </div>
                                 <div className="bg-[var(--bg-secondary)] p-4 rounded-lg border border-[var(--border-color)]">
                                     <p className="text-xs text-[var(--text-secondary)] mb-1">ACCIÓN DE ESPERA</p>
