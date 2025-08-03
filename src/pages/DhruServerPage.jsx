@@ -51,30 +51,22 @@ const DhruServerPage = () => {
         result = JSON.parse(text);
       } catch (jsonError) {
         console.error('Error al parsear JSON:', jsonError);
-        result = { body: text };
+        toast({ title: 'Error', description: 'Respuesta inválida del servidor.', variant: 'destructive' });
+        return;
       }
 
       console.log('Respuesta procesada del servidor:', result);
 
       if (response.ok) {
-        let orderResult;
-        try {
-          orderResult = JSON.parse(result.body);
-        } catch (parseError) {
-          console.error('Error al parsear el cuerpo de la orden:', parseError);
-          toast({ title: 'Error', description: 'Formato de respuesta inesperado.', variant: 'destructive' });
-          return;
-        }
-
-        if (orderResult.SUCCESS && orderResult.SUCCESS.length > 0) {
-          const message = orderResult.SUCCESS[0].MESSAGE;
+        if (result.SUCCESS && result.SUCCESS.length > 0) {
+          const message = result.SUCCESS[0].MESSAGE;
           if (message && message.toLowerCase().includes('received')) {
             // Agregar al historial
             const newOrder = {
               id: Date.now(), // ID temporal basado en timestamp
               serviceName: selectedService.SERVICENAME,
               identifier: identifier,
-              referenceId: orderResult.SUCCESS[0].REFERENCEID,
+              referenceId: result.SUCCESS[0].REFERENCEID,
               status: 'Received',
               date: new Date().toISOString(),
             };
@@ -84,6 +76,9 @@ const DhruServerPage = () => {
           } else {
             toast({ title: 'Error', description: message || 'Error al procesar la orden.', variant: 'destructive' });
           }
+        } else if (result.ERROR && result.ERROR.length > 0) {
+          const message = result.ERROR[0].MESSAGE;
+          toast({ title: 'Error', description: message || 'Error al procesar la orden.', variant: 'destructive' });
         } else {
           toast({ title: 'Error', description: 'Respuesta inesperada del servidor.', variant: 'destructive' });
         }
@@ -125,11 +120,11 @@ const DhruServerPage = () => {
                 >
                   {services.filter(s => s.SERVICETYPE === 'SERVER').map(service => (
                     <option key={service.SERVICEID} value={service.SERVICEID}>
-                      {service.SERVICENAME} (${service.CREDIT})
+                      {service.SERVICENAME} (${parseFloat(service.CREDIT).toFixed(2)})
                     </option>
                   ))}
                 </select>
-                <p className="text-right text-sm font-bold text-[var(--accent-primary)] mt-2">${selectedService?.CREDIT || '0.00'}</p>
+                <p className="text-right text-sm font-bold text-[var(--accent-primary)] mt-2">${selectedService ? parseFloat(selectedService.CREDIT).toFixed(2) : '0.00'}</p>
               </div>
               <div className="flex-grow">
                 <label htmlFor="identifier" className="block text-sm font-medium mb-2 text-[var(--text-secondary)]">Identificador (Usuario, Email, etc.)</label>
@@ -149,7 +144,7 @@ const DhruServerPage = () => {
           <div className="glass-effect rounded-2xl p-8 border border-[var(--border-color)] text-center flex flex-col justify-between h-full">
             <div>
               <Server className="w-16 h-16 mx-auto text-[var(--accent-primary)] mb-4" />
-              <p className="text-5xl font-bold mb-2">${selectedService?.CREDIT || '0.00'}</p>
+              <p className="text-5xl font-bold mb-2">${selectedService ? parseFloat(selectedService.CREDIT).toFixed(2) : '0.00'}</p>
               <p className="text-sm text-[var(--text-secondary)] mb-6">Simplemente complete los datos y proceda a pagar sus pedidos utilizando su saldo.</p>
               <div className="flex items-center justify-center gap-2 text-lg">
                 <Gem className="w-5 h-5 text-[var(--accent-primary)]" />

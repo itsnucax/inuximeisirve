@@ -41,7 +41,8 @@ export const AuthProvider = ({ children }) => {
           for (const category in categories) {
             if (categories[category].SERVICES) {
               const servicesInCategory = Object.values(categories[category].SERVICES)
-                .filter(service => service.SERVICEID);
+                .filter(service => service.SERVICEID)
+                .map(service => ({ ...service, CREDIT: parseFloat(service.CREDIT) }));
               serviceList.push(...servicesInCategory);
               console.log(`Servicios en ${category}:`, servicesInCategory); // Depuración
             }
@@ -218,7 +219,8 @@ export const AuthProvider = ({ children }) => {
         for (const category in categories) {
           if (categories[category].SERVICES) {
             const servicesInCategory = Object.values(categories[category].SERVICES)
-              .filter(service => service.SERVICEID);
+              .filter(service => service.SERVICEID)
+              .map(service => ({ ...service, CREDIT: parseFloat(service.CREDIT) }));
             serviceList.push(...servicesInCategory);
           }
         }

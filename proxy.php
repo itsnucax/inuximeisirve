@@ -5,6 +5,8 @@ header("Content-Type: application/json");
 
 $targetUrl = "https://team-gaby.com/api/index.php";
 $data = json_decode(file_get_contents('php://input'), true);
+$action = $data['action'] ?? '';
+unset($data['action']);
 
 if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
     http_response_code(204);
@@ -17,7 +19,7 @@ $options = [
         'header' => "Content-Type: application/json\r\n" .
                     "Username: " . USERNAME . "\r\n" .
                     "Apiaccesskey: " . API_ACCESS_KEY . "\r\n" .
-                    "Action: " . ($_POST['action'] ?? '') . "\r\n" .
+                    "Action: " . $action . "\r\n" .
                     "Requestformat: " . REQUESTFORMAT . "\r\n",
         'content' => json_encode($data),
         'ignore_errors' => true,

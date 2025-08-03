@@ -22,7 +22,6 @@ const DhruServicesDropdown = ({ onNavigate, setMobileMenuOpen }) => {
                  <a onClick={() => handleNavigation('imei')} className="block px-4 py-2 text-sm text-[var(--text-secondary)] hover:bg-[var(--accent-primary)]/10 hover:text-[var(--accent-primary)] transition-colors cursor-pointer">Registrar servicios de IMEI</a>
                  <a onClick={() => handleNavigation('server')} className="block px-4 py-2 text-sm text-[var(--text-secondary)] hover:bg-[var(--accent-primary)]/10 hover:text-[var(--accent-primary)] transition-colors cursor-pointer">Registrar servicios de servidor</a>
                  <a onClick={() => handleNavigation('rental')} className="block px-4 py-2 text-sm text-[var(--text-secondary)] hover:bg-[var(--accent-primary)]/10 hover:text-[var(--accent-primary)] transition-colors cursor-pointer">Renta de Herramientas</a>
-                 <a onClick={() => handleNavigation('serial')} className="block px-4 py-2 text-sm text-[var(--text-secondary)] hover:bg-[var(--accent-primary)]/10 hover:text-[var(--accent-primary)] transition-colors cursor-pointer">Registrar serial</a>
                  {isLoggedIn && <a onClick={() => handleNavigation('historial')} className="block px-4 py-2 text-sm text-[var(--text-secondary)] hover:bg-[var(--accent-primary)]/10 hover:text-[var(--accent-primary)] transition-colors cursor-pointer">Historial de servicios de DHRU</a>}
             </div>
         </div>
@@ -147,7 +146,6 @@ const Header = ({ activeTab, setActiveTab, isMobileMenuOpen, setMobileMenuOpen, 
                                     <button onClick={() => { handleDhruNavigation('imei'); setMobileMenuOpen(false); }} className="text-left text-[var(--text-secondary)]">Registrar servicios IMEI</button>
                                     <button onClick={() => { handleDhruNavigation('server'); setMobileMenuOpen(false); }} className="text-left text-[var(--text-secondary)]">Registrar servicios servidor</button>
                                     <button onClick={() => { handleDhruNavigation('rental'); setMobileMenuOpen(false); }} className="text-left text-[var(--text-secondary)]">Renta de Herramientas</button>
-                                    <button onClick={() => { handleDhruNavigation('serial'); setMobileMenuOpen(false); }} className="text-left text-[var(--text-secondary)]">Registrar serial</button>
                                     {isLoggedIn && <button onClick={() => { handleDhruNavigation('historial'); setMobileMenuOpen(false); }} className="text-left text-[var(--text-secondary)]">Historial DHRU</button>}
                                 </div>
                             </div>

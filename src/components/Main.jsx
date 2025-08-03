@@ -8,7 +8,6 @@ import Footer from '@/components/layout/Footer';
 import Marquee from '@/components/layout/Marquee';
 
 import HomePage from '@/pages/HomePage';
-import RegisterSerialPage from '@/pages/RegisterSerialPage';
 import FeaturesPage from '@/pages/FeaturesPage';
 import DownloadPage from '@/pages/DownloadPage';
 import LoginPage from '@/pages/LoginPage';
@@ -28,14 +27,13 @@ const Main = () => {
   const { toast } = useToast();
 
   const handleDhruNavigation = (target) => {
-    if ((target === 'historial' || target === 'imei' || target === 'server' || target === 'serial' || target === 'rental') && !isLoggedIn) {
+    if ((target === 'historial' || target === 'imei' || target === 'server' || target === 'rental') && !isLoggedIn) {
          toast({ title: 'Acceso Denegado', description: 'Debes iniciar sesión para acceder a esta sección.', variant: 'destructive' });
          return;
     }
-    
+
     if (target === "imei") setActiveTab('dhru-imei');
     else if (target === "server") setActiveTab('dhru-server');
-    else if (target === "serial") setActiveTab('registrar-serial');
     else if (target === "historial") setActiveTab('dhru-historial');
     else if (target === "rental") setActiveTab('dhru-rental');
   }
@@ -43,7 +41,6 @@ const Main = () => {
   const renderContent = () => {
     switch (activeTab) {
       case 'inicio': return <HomePage setActiveTab={setActiveTab} />;
-      case 'registrar-serial': return isLoggedIn ? <RegisterSerialPage /> : <HomePage setActiveTab={setActiveTab} />;
       case 'caracteristicas': return <FeaturesPage />;
       case 'descargar': return <DownloadPage />;
       case 'login': return <LoginPage setActiveTab={setActiveTab} />;

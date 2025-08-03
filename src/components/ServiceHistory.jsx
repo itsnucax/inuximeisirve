@@ -44,7 +44,7 @@ const ServiceHistory = () => {
                   <td className="p-3">
                     <StatusBadge status={item.status || 'Pendiente'} />
                   </td>
-                  <td className="p-3 text-right font-semibold">{item.cost}</td>
+                  <td className="p-3 text-right font-semibold">${parseFloat(item.cost).toFixed(2)}</td>
                 </tr>
               ))}
             </tbody>
