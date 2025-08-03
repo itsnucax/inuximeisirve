@@ -209,9 +209,45 @@ export const AuthProvider = ({ children }) => {
   const updateServices = async () => {
     setLoading(true);
     try {
-      const response = await fetch('https://inuxteam.com/api/get_imeiservice_list.php');
+      const params = new URLSearchParams({
+        username: 'itsnucax',
+        access_key: 'T94-7AQ-TZR-TBL-SDK-PAC-MX3-MZX',
+        action: 'imeiservicelist',
+      });
+
+      const response = await fetch('https://inuxteam.com/api/get_imeiservice_list.php', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        body: params.toString(),
+      });
       if (!response.ok) throw new Error('Error en la API');
-      const data = await response.json();
+
+      const contentType = response.headers.get('Content-Type') || '';
+      const text = await response.text();
+      let data;
+
+      if (!contentType.includes('application/json')) {
+        console.error('Respuesta cruda del servidor:', text);
+        const match = text.match(/\{.*\}$/s);
+        if (!match) {
+          toast({ title: 'Error', description: 'Formato de respuesta no válido.', variant: 'destructive' });
+          return;
+        }
+        try {
+          data = JSON.parse(match[0]);
+        } catch {
+          toast({ title: 'Error', description: 'Formato de respuesta no válido.', variant: 'destructive' });
+          return;
+        }
+      } else {
+        data = JSON.parse(text);
+      }
+
+      if (data.ERROR) {
+        const message = data.ERROR[0]?.MESSAGE || 'Error desconocido.';
+        toast({ title: 'Error', description: message, variant: 'destructive' });
+        return;
+      }
       if (data.SUCCESS && data.SUCCESS[0].LIST) {
         const serviceList = [];
         const categories = data.SUCCESS[0].LIST;
