@@ -51,30 +51,22 @@ const DhruServerPage = () => {
         result = JSON.parse(text);
       } catch (jsonError) {
         console.error('Error al parsear JSON:', jsonError);
-        result = { body: text };
+        toast({ title: 'Error', description: 'Respuesta inválida del servidor.', variant: 'destructive' });
+        return;
       }
 
       console.log('Respuesta procesada del servidor:', result);
 
       if (response.ok) {
-        let orderResult;
-        try {
-          orderResult = JSON.parse(result.body);
-        } catch (parseError) {
-          console.error('Error al parsear el cuerpo de la orden:', parseError);
-          toast({ title: 'Error', description: 'Formato de respuesta inesperado.', variant: 'destructive' });
-          return;
-        }
-
-        if (orderResult.SUCCESS && orderResult.SUCCESS.length > 0) {
-          const message = orderResult.SUCCESS[0].MESSAGE;
+        if (result.SUCCESS && result.SUCCESS.length > 0) {
+          const message = result.SUCCESS[0].MESSAGE;
           if (message && message.toLowerCase().includes('received')) {
             // Agregar al historial
             const newOrder = {
               id: Date.now(), // ID temporal basado en timestamp
               serviceName: selectedService.SERVICENAME,
               identifier: identifier,
-              referenceId: orderResult.SUCCESS[0].REFERENCEID,
+              referenceId: result.SUCCESS[0].REFERENCEID,
               status: 'Received',
               date: new Date().toISOString(),
             };
@@ -84,6 +76,9 @@ const DhruServerPage = () => {
           } else {
             toast({ title: 'Error', description: message || 'Error al procesar la orden.', variant: 'destructive' });
           }
+        } else if (result.ERROR && result.ERROR.length > 0) {
+          const message = result.ERROR[0].MESSAGE;
+          toast({ title: 'Error', description: message || 'Error al procesar la orden.', variant: 'destructive' });
         } else {
           toast({ title: 'Error', description: 'Respuesta inesperada del servidor.', variant: 'destructive' });
         }

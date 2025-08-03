@@ -47,37 +47,32 @@ const DhruImeiPage = () => {
         }),
       });
 
-      const text = await response.text(); // Obtener el cuerpo como texto primero
-      console.log('Respuesta cruda del servidor:', text); // Depuración de la respuesta cruda
+      const text = await response.text();
+      console.log('Respuesta cruda del servidor:', text);
 
       let result;
       try {
-        result = JSON.parse(text); // Parsear como JSON
+        result = JSON.parse(text);
       } catch (jsonError) {
         console.error('Error al parsear JSON:', jsonError);
-        result = { body: text }; // Fallback si falla
+        toast({ title: 'Error', description: 'Respuesta inválida del servidor.', variant: 'destructive' });
+        return;
       }
 
-      console.log('Respuesta procesada del servidor:', result); // Depuración después de parsear
+      console.log('Respuesta procesada del servidor:', result);
 
       if (response.ok) {
-        let orderResult;
-        try {
-          orderResult = JSON.parse(result.body); // Parsear el JSON dentro de body
-        } catch (parseError) {
-          console.error('Error al parsear el cuerpo de la orden:', parseError);
-          toast({ title: 'Error', description: 'Formato de respuesta inesperado.', variant: 'destructive' });
-          return;
-        }
-
-        if (orderResult.SUCCESS && orderResult.SUCCESS.length > 0) {
-          const message = orderResult.SUCCESS[0].MESSAGE;
+        if (result.SUCCESS && result.SUCCESS.length > 0) {
+          const message = result.SUCCESS[0].MESSAGE;
           if (message && message.toLowerCase().includes('received')) { // Ajustado a "received" por "Order received"
             toast({ title: 'Éxito', description: message || 'Orden registrada correctamente.', variant: 'default' });
             setImeiList(''); // Limpia el textarea
           } else {
             toast({ title: 'Error', description: message || 'Error al procesar la orden.', variant: 'destructive' });
           }
+        } else if (result.ERROR && result.ERROR.length > 0) {
+          const message = result.ERROR[0].MESSAGE;
+          toast({ title: 'Error', description: message || 'Error al procesar la orden.', variant: 'destructive' });
         } else {
           toast({ title: 'Error', description: 'Respuesta inesperada del servidor.', variant: 'destructive' });
         }
