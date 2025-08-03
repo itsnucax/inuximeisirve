@@ -209,8 +209,20 @@ export const AuthProvider = ({ children }) => {
   const updateServices = async () => {
     setLoading(true);
     try {
-      const response = await fetch('https://inuxteam.com/api/get_imeiservice_list.php');
+      const response = await fetch('https://inuxteam.com/api/get_imeiservice_list.php', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          username: 'itsnucax',
+          access_key: 'T94-7AQ-TZR-TBL-SDK-PAC-MX3-MZX',
+        }),
+      });
       if (!response.ok) throw new Error('Error en la API');
+      const contentType = response.headers.get('Content-Type') || '';
+      if (!contentType.includes('application/json')) {
+        toast({ title: 'Error', description: 'Formato de respuesta no válido.', variant: 'destructive' });
+        return;
+      }
       const data = await response.json();
       if (data.SUCCESS && data.SUCCESS[0].LIST) {
         const serviceList = [];
